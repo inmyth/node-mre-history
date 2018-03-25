@@ -1,6 +1,6 @@
 {
   "name": "node-mre-history",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -22,6 +22,7 @@
     "sequelize": "^4.31.2",
     "sequelize-cli": "^3.0.0",
     "serve-favicon": "~2.4.5",
-    "validator": "^9.2.0"
+    "validator": "^9.2.0",
+    "ripple-lib-transactionparser":"^0.6.2"
   }
 }

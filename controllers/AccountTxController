@@ -1,9 +1,0 @@
-'use strict';
-
-const get = async function(req, res){
-    res.setHeader('Content-Type', 'application/json');
-    let account = req.account;
-
-    return ReS(res, {account:account.toWeb()});
-}
-module.exports.get = get;

@@ -1,0 +1,389 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Historical Data API rebuilt from rippled backup data. Exporter project: https://github.com/inmyth/akka-mre-tx-exporter",
+    "version": "1.0.0",
+    "title": "rippled's History Backup API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "host",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "trades",
+      "description": "Returns trade data parsed with metaparser"
+    },
+    {
+      "name": "database",
+      "description": "Returns all database columns"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/db/account/dates/{account}": {
+      "get": {
+        "summary": "Returns (SELECT * WHERE account = <input account>) between dates",
+        "tags": [
+          "database"
+        ],
+        "operationId": "getDbByAccDates",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "description": "Account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "Maximum date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "min",
+            "in": "query",
+            "description": "Minimum date",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Db"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/db/account/ledgers/{account}": {
+      "get": {
+        "summary": "Returns (SELECT * WHERE account = <input account>) between ledger indexes",
+        "tags": [
+          "database"
+        ],
+        "operationId": "getDbByAccLedgers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "description": "Account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "Maximum ledger index",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "min",
+            "in": "query",
+            "description": "Minimum ledger index",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Db"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/db/hash/{hash}": {
+      "get": {
+        "summary": "Returns (SELECT * WHERE hash = <input hash>)",
+        "tags": [
+          "database"
+        ],
+        "operationId": "getDbByHash",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "description": "Transaction hash",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Db"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/trades/dates/{account}": {
+      "get": {
+        "tags": [
+          "trades"
+        ],
+        "summary": "Get trades between dates",
+        "operationId": "getTradesByDates",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "description": "Account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "Maximum date",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "min",
+            "in": "query",
+            "description": "Minimum date",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trade"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    },
+    "/trades/ledgers/{account}": {
+      "get": {
+        "tags": [
+          "trades"
+        ],
+        "summary": "Get trades between ledger indexes",
+        "operationId": "getTradesByLedgers",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "account",
+            "in": "path",
+            "description": "Account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "max",
+            "in": "query",
+            "description": "Maximum ledger index",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "min",
+            "in": "query",
+            "description": "Minimum ledger index",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trade"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Trade": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string",
+          "example": "33EEE67FD2BFEB0497B07756677ACD776D229FEFF8683885D45CE0E3A6E7D61B"
+        },
+        "ledger_index": {
+          "type": "integer",
+          "format": "int64",
+          "example": 3543450
+        },
+        "human_date": {
+          "type": "string",
+          "example": "2018-01-03T10:36:40.000Z"
+        },
+        "buy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Amount"
+          }
+        },
+        "sell": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Amount"
+          }
+        },
+        "fee": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "example": "0.00012"
+              },
+              "currency": {
+                "type": "string",
+                "example": "XRP"
+              },
+              "counterparty": {
+                "type": "string",
+                "example": ""
+              }
+            }
+          }
+        }
+      }
+    },
+    "Db": {
+      "type": "object",
+      "properties": {
+        "account": {
+          "type": "string",
+          "example": "r13gobHScQYDbWCZz5JPyAcXawLc7cbtK"
+        },
+        "hash": {
+          "type": "string",
+          "example": "1A58819A41FE5ED68FC868EA6602A91A293CE10D74B81EB0F21C291BD42903AC"
+        },
+        "ledger_index": {
+          "type": "integer",
+          "format": "int64",
+          "example": 3573563
+        },
+        "date": {
+          "type": "integer",
+          "format": "int64",
+          "example": 568382381
+        },
+        "human_date": {
+          "type": "string",
+          "example": "2018-01-04 11:59:41"
+        },
+        "transaction_type": {
+          "type": "string",
+          "example": "TrustSet"
+        },
+        "txn_account": {
+          "type": "string",
+          "example": "r13gobHScQYDbWCZz5JPyAcXawLc7cbtK"
+        },
+        "tx": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "string"
+        }
+      }
+    },
+    "Amount": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "example": "1008.54326"
+        },
+        "currency": {
+          "type": "string",
+          "example": "XLM"
+        },
+        "counterparty": {
+          "type": "string",
+          "example": "rU8i9JeoBGiUhXNXomEXSNejPHt39ixXLM"
+        }
+      }
+    },
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

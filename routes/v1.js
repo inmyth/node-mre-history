@@ -1,11 +1,25 @@
-const express 			= require('express');
+const express 		= require('express');
 const router 			= express.Router();
+const path        = require('path');
 
 const AccountTxController = require('./../controllers/AccountTxController')
 
-router.get('/', function(req, res, next) {
-  res.json({status:"success", message:"Parcel Pending API", data:{"version_number":"v1.0.0"}})
-});
+// router.get('/', function(req, res, next) {
+//   res.json({status:"success", message:"Parcel Pending API", data:{"version_number":"v1.0.0"}})
+// });
+
+//********* API DOCUMENTATION **********
+router.use('/api.json', express.static(path.join(__dirname, '/../public/v1/documentation/api.json')));
+router.use('/',         express.static(path.join(__dirname, '/../public/v1/documentation/dist')));
+
+/* Trades*/
+router.get('/trades/dates/:account', AccountTxController.getTradesByDates);
+router.get('/trades/ledgers/:account', AccountTxController.getTradesByLedgers);
+
+/* Database*/
+router.get('/db/account/dates/:account', AccountTxController.getDbByAccDates);
+router.get('/db/account/ledgers/:account', AccountTxController.getDbByAccLedgers);
+router.get('/db/hash/:hash', AccountTxController.getDbByHash);
 
 // const UserController 	= require('./../controllers/UserController');
 // const CompanyController = require('./../controllers/CompanyController');
@@ -40,7 +54,5 @@ router.get('/', function(req, res, next) {
 // router.get('/dash', passport.authenticate('jwt', {session:false}),HomeController.Dashboard)
 //
 //
-// //********* API DOCUMENTATION **********
-// router.use('/docs/api.json',            express.static(path.join(__dirname, '/../public/v1/documentation/api.json')));
-// router.use('/docs',                     express.static(path.join(__dirname, '/../public/v1/documentation/dist')));
+
 module.exports = router;
