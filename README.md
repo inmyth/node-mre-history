@@ -30,3 +30,7 @@ Swagger is API documentation tool. To make sure it is set correctly, open `publi
 ```
 npm start
 ```
+
+#### Credit
+
+This project is using REST Express template taken from https://github.com/brianalois/node_rest_api_mysql
