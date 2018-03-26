@@ -1,6 +1,6 @@
 'use strict';
 const account_tx = require('../models').account_tx;
-const Op = require('Sequelize').Op;
+const Op = require('sequelize').Op;
 const balanceToTrade = require('../helpers/metaparser.js').balanceToTrade;
 
 const getTradesByDates = async function(req, res){
