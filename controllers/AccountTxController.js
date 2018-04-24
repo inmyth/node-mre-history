@@ -10,16 +10,16 @@ const getTradesByDates = async function(req, res){
   let maxDate = req.query.max;
 
   let r;
-  //SELECT * FROM main.account WHERE account = 'r13gobHScQYDbWCZz5JPyAcXawLc7cbtK' AND transaction_type = "OfferCreate" OR transaction_type = "Payment" AND human_date BETWEEN '2018-01-03' AND '2018-01-05'
+//SELECT * FROM main.account_tx WHERE account = 'r9ZkXqeLGdKSp13ddpUa6H3fZVE94iBprE' AND (transaction_type = "OfferCreate" OR transaction_type = "Payment") AND human_date BETWEEN '2017-09-01' AND '2017-10-05'
   r = await to (account_tx.findAll({
-    attributes: ['hash','ledger_index', 'human_date', 'meta' ],
+    attributes: ['hash','ledger_index', 'human_date', 'txn_account', 'tx','meta' ],
     where: {
       account: account,
       transaction_type : {
         [Op.or]:["Payment", "OfferCreate"]
       },
       human_date: {
-          [Op.between]: [minDate, maxDate]
+        [Op.between]: [minDate, maxDate]
       }
     }
   }));
@@ -43,7 +43,7 @@ const getTradesByLedgers = async function(req, res){
         [Op.or]:["Payment", "OfferCreate"]
       },
       ledger_index: {
-          [Op.between]: [minLedger, maxLedger]
+        [Op.between]: [minLedger, maxLedger]
       }
     }
   }));

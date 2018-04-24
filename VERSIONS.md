@@ -1,3 +1,6 @@
+v.1.1.1
+- fixed 1.1.0
+
 v.1.1.0
 - fixed metadata for fee logic
 

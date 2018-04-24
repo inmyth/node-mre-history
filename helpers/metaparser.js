@@ -4,29 +4,38 @@ const inspect = require('util').inspect;
 var Big = require('./big.min.js');
 const parseOrderbookChanges = require('ripple-lib-transactionparser').parseOrderbookChanges;
 const parseBalanceChanges = require('ripple-lib-transactionparser').parseBalanceChanges;
+const zero = Big('0.0');
+const million = Big('1000000');
 
 function show(object){
   return inspect(object, false, null);
 }
 
-function balanceChanges(raw, myAddress, isDataAPI){
-  let json = JSON.parse(raw)
-  let transactions = isDataAPI ? json.transactions : json.result.transactions;
+function getBasics(root){
+  let res = {
+    date : root.human_date,
+    hash : root.hash,
+    ledger_index : root.ledger_index
+    }
+  return res;
+}
 
-  return transactions
+function balanceChanges(rows, myAddress){
+  return rows
   .map(r => {
-    let balanceChanges = parseBalanceChanges(r.meta);
-    let myBalanceChanges = balanceChanges[myAddress];
-    let basics = getBasics(isDataAPI ? r : r.tx, isDataAPI);
-    let feeXRP = r.tx.Account === myAddress ? (Big(r.tx.Fee).div(million)) : zero;
+    let tx = JSON.parse(r.tx);
+    let meta = JSON.parse(r.meta);
+    let allBalanceChanges = parseBalanceChanges(meta);
+    let myBalanceChanges = allBalanceChanges[myAddress];
+    let basics = getBasics(r);
+    let feeXRP = r.txn_account === myAddress ? (Big(tx.Fee).div(million)) : zero;
     return {hash: basics.hash, ledger_index: basics.ledger_index, date: basics.date, feeXRP : feeXRP, data : myBalanceChanges};
   })
   .filter(r => r.data !== undefined);
 }
 
-
-function balanceToTrade(raw, myAddress, isDataAPI){
-  return balanceChanges(raw, myAddress, isDataAPI)
+function balanceToTrade(raw, myAddress){
+  return balanceChanges(raw, myAddress)
   .filter(r => r.data.length > 1) // length 1 = payment or fees
   .map(r => {
     let get  = [];
