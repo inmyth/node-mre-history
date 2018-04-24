@@ -9,49 +9,44 @@ function show(object){
   return inspect(object, false, null);
 }
 
-function balanceChanges(raw, myAddress){
-  return raw
+function balanceChanges(raw, myAddress, isDataAPI){
+  let json = JSON.parse(raw)
+  let transactions = isDataAPI ? json.transactions : json.result.transactions;
+
+  return transactions
   .map(r => {
-    let meta = JSON.parse(r.meta)
-    let balanceChanges = parseBalanceChanges(meta);
+    let balanceChanges = parseBalanceChanges(r.meta);
     let myBalanceChanges = balanceChanges[myAddress];
-    return {hash: r.hash, ledger_index: r.ledger_index, human_date: r.human_date, data : myBalanceChanges};
+    let basics = getBasics(isDataAPI ? r : r.tx, isDataAPI);
+    let feeXRP = r.tx.Account === myAddress ? (Big(r.tx.Fee).div(million)) : zero;
+    return {hash: basics.hash, ledger_index: basics.ledger_index, date: basics.date, feeXRP : feeXRP, data : myBalanceChanges};
   })
   .filter(r => r.data !== undefined);
 }
 
 
-const maxFeeXRP  = Big('0.00012');
-const zero = Big('0.0');
-function balanceToTrade(raw, myAddress){
-  return balanceChanges(raw, myAddress)
+function balanceToTrade(raw, myAddress, isDataAPI){
+  return balanceChanges(raw, myAddress, isDataAPI)
   .filter(r => r.data.length > 1) // length 1 = payment or fees
   .map(r => {
     let get  = [];
     let pay  = [];
-    let fee  = [];
+    let feeXRP  = r.feeXRP;
 
-    if (r.data.length == 2){ // order taken or exchange
-      for (var i = 0; i < r.data.length; i++){
-        balanceToTradePusher(r.data[i], get, pay);
-      }
-    }
-    else {
-      // could be offerCreate + consumed (l = 3) or payment (l = any number)
-      // we need to filter out xrp fee
-      for (var i = 0; i < r.data.length; i++){
-        let d = r.data[i];
-        if (d.currency === 'XRP' && Big(d.value).lt(zero) && Big(d.value).abs().lte(maxFeeXRP)){
-          fee.push(d);
+    r.data.forEach(d => balanceToTradePusher(d, get, pay))
+    if (feeXRP.gt(zero)){
+      pay = pay
+      .map(z => {
+        if(z.currency === "XRP"){
+          z.value = toFixed(Big(z.value).plus(feeXRP).toFixed(6));
         }
-        else{
-          balanceToTradePusher(d, get, pay);
-        }
-      }
+        return z;
+      })
+      .filter(z => !Big(z.value).eq(zero))
     }
-    return {hash: r.hash, ledger_index: r.ledger_index, human_date: r.human_date, get : get, pay : pay, fee : fee};
+    return {hash: r.hash, ledger_index: r.ledger_index, date: r.date, get : get, pay : pay, fee : toFixed(feeXRP)};
   })
-  // exchange has only get or pay filled so trades must have both
+  // exchange has only get or pay filled
   .filter(r => r.get.length > 0 && r.pay.length > 0);
 }
 
@@ -93,8 +88,6 @@ function toFixed(num) {
 
   return numStr;
 }
-
-
 
 
 module.exports = {
